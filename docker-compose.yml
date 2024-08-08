@@ -1,0 +1,55 @@
+services:
+  suitecrm:
+    build: .
+    environment:
+      - SUITECRM_DB_HOST=db
+      - SUITECRM_DB_PORT=3306
+      - SUITECRM_DB_NAME=suitecrm
+      - SUITECRM_DB_USER=suitecrmuser
+      - SUITECRM_DB_PASSWORD=suitecrmpassword
+      - SUITECRM_DB_TYPE=mysqli
+    volumes:
+      - ./path/to/your/suitecrm:/var/www/html
+    depends_on:
+      - db
+      - mongo
+    ports:
+      - "8080:80"
+
+  db:
+    image: mariadb:10.6.16
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=suitecrm
+      - MYSQL_USER=suitecrmuser
+      - MYSQL_PASSWORD=suitecrmpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  mongo:
+    image: mongo:4.4
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=rootpassword
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+
+volumes:
+  suitecrm_data:
+  db_data:
+  mongo_data:
